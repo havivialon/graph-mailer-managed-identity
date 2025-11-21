@@ -7,7 +7,6 @@ using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Microsoft.Graph.Users.Item.SendMail;
 
-
 public class Function1
 {
   private readonly ILogger<Function1> _logger;
@@ -16,7 +15,7 @@ public class Function1
   public Function1(ILogger<Function1> logger)
   {
     _logger = logger;
-    var managedIdentityClientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
+    var managedIdentityClientId = Environment.GetEnvironmentVariable("UserManagedIdentityProviderClientId");
     var credential = new ManagedIdentityCredential(managedIdentityClientId);
     _graphServiceClient = new GraphServiceClient(credential);
   }
@@ -26,10 +25,10 @@ public class Function1
   {
     try
     {
-      var sender = req.Query["sender"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("MAIL_SENDER");
-      var to = req.Query["to"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("MAIL_TO");
-      var subject = req.Query["subject"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("MAIL_SUBJECT");
-      var bodyText = req.Query["body"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("MAIL_BODY");
+      var sender = req.Query["sender"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("EMAIL_DEFAULT_SENDER");
+      var to = req.Query["to"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("EMAIL_DEFAULT_RECIPIENT");
+      var subject = req.Query["subject"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("EMAIL_DEFAULT_SUBJECT");
+      var bodyText = req.Query["body"].FirstOrDefault() ?? Environment.GetEnvironmentVariable("EMAIL_DEFAULT_BODY");
 
       var user = await _graphServiceClient.Users[sender].GetAsync(cancellationToken: ct);
       if (user == null)
